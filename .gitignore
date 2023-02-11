@@ -2,3 +2,10 @@ model.pt
 vocab_obj.pth
 tokens
 AOCHIDES/
+__MACOSX/
+__pycache__/
+*.zip
+babylm_data/
+*.pth
+*.pt
+sentences

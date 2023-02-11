@@ -42,8 +42,6 @@ class HMM_syllable(torch.nn.Module):
       z_t = torch.distributions.categorical.Categorical(transition_matrix[:,z_t]).sample().item()
       if t < T-1: z.append(z_t)
 
-      if x_t == stop_token_index:
-        return x, z
     return x, z
   def forward(self, x, T):
     """

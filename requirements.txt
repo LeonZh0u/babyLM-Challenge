@@ -4,3 +4,7 @@ numpy
 pyprind
 sklearn
 nltk
+torchtext
+stanza
+git+https://github.com/UIUCLearningLanguageLab/AOCHILDES.git
+gdown

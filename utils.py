@@ -4,8 +4,27 @@ import numpy as np
 from nltk.tokenize import SyllableTokenizer
 from nltk import word_tokenize
 from pathlib import Path
+
+import multiprocessing
+
 SSP = SyllableTokenizer()
 
+
+def build_or_load_vocab(transcript, unk_token="<unk>"):
+    if os.path.exists('vocab_obj.pth'):
+        return torch.load('vocab_obj.pth')
+    all_tokens = []
+    pool = multiprocessing.Pool(None)
+
+    for out in pool.map(word_tokenize, transcript):
+        all_tokens += out
+
+    vocab = torch_vocab(OrderedDict(Counter(all_tokens)), specials=[unk_token])
+
+    vocab.insert_token("\n", len(vocab))
+    vocab.set_default_index(vocab[unk_token])
+    torch.save(vocab, 'vocab_obj.pth')
+    return vocab
 
 
 def log_domain_matmul(log_A, log_B):

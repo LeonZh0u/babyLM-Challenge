@@ -2,11 +2,10 @@ from nltk import word_tokenize
 import nltk
 from nltk.tokenize import SyllableTokenizer
 from hmm_syllables import *
+from inference import generate_babytalk_sentences
 from trainer import *
 from collections import Counter, OrderedDict
-from torchtext.vocab import vocab as torch_vocab
 from sklearn.model_selection import train_test_split
-from collections import Counter
 import torch.utils.data
 import stanza
 import pickle
@@ -16,25 +15,8 @@ import torch
 from aochildes.dataset import AOChildesDataSet
 from pathlib import Path
 import os
-import multiprocessing
+
 nltk.download('punkt')
-
-
-def build_or_load_vocab(transcript, unk_token="<unk>"):
-    if os.path.exists('vocab_obj.pth'):
-        return torch.load('vocab_obj.pth')
-    all_tokens = []
-    pool = multiprocessing.Pool(None)
-
-    for out in pool.map(word_tokenize, transcript):
-        all_tokens += out
-
-    vocab = torch_vocab(OrderedDict(Counter(all_tokens)), specials=[unk_token])
-
-    vocab.insert_token("\n", len(vocab))
-    vocab.set_default_index(vocab[unk_token])
-    torch.save(vocab, 'vocab_obj_tokens.pth')
-    return vocab
 
 
 def encode(s, vocab):
@@ -110,7 +92,7 @@ with open("tokens", "wb") as fp:   #Pickling
    pickle.dump(tokens, fp) """
 
 
-def main():
+def train_hmm_syllables():
     transcripts = AOChildesDataSet().load_transcripts()
     SSP = SyllableTokenizer()
     vocab = build_or_load_vocab(transcripts)
@@ -170,4 +152,9 @@ def main():
 if __name__ == "__main__":
     import aochildes
     aochildes.configs.Dirs.transcripts = Path("data/aochildes/")
-    main()
+    # train_hmm_syllables()
+    # FIXME (Leon): 1. why is <unk> in output?
+    # 2. why are there so many newlines?
+    # 3. Remove newlines from vocab
+    # 4. make sure the ouput of the below call is exactly 10 sentences
+    generate_babytalk_sentences(10, "babytalk_corpus.txt")

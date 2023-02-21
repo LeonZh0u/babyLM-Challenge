@@ -1,5 +1,4 @@
 import torch
-import numpy as np
 from utils import *
 
 class HMM_syllable(torch.nn.Module):
@@ -43,6 +42,7 @@ class HMM_syllable(torch.nn.Module):
       if t < T-1: z.append(z_t)
 
     return x, z
+
   def forward(self, x, T):
     """
     x : IntTensor of shape (batch size, T_max)

@@ -1,10 +1,13 @@
+babytalk_corpus.txt
 data/
 *.pt
 *.pth
 tokens
-AOCHIDES/
 __MACOSX/
 __pycache__/
 *.zip
 babylm_data/
 sentences
+.vscode/
+AOCHILDES/
+babylm/

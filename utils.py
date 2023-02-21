@@ -1,11 +1,66 @@
 import re
 import torch
-import numpy as np
 from nltk.tokenize import SyllableTokenizer
 from nltk import word_tokenize
-from pathlib import Path
+import os
+import pickle
+import multiprocessing
+from torchtext.vocab import vocab as torch_vocab
+from collections import OrderedDict, Counter
+from tqdm import tqdm
+from string import punctuation
+
 SSP = SyllableTokenizer()
 
+def build_or_load_vocab(transcript, unk_token="<unk>"):
+    if os.path.exists('vocab_obj.pth'):
+        return torch.load('vocab_obj.pth')
+    all_tokens = []
+    pool = multiprocessing.Pool(None)
+
+    for out in pool.map((word_tokenize), transcript):
+        all_tokens += out
+
+    all_syllables = []
+    for out in pool.map(SSP.tokenize, all_tokens):
+        all_syllables += out
+    
+    vocab = torch_vocab(OrderedDict(Counter(all_syllables)))
+
+    vocab.insert_token(" ", len(vocab))
+    torch.save(vocab, 'vocab_obj.pth')
+    return vocab
+
+def build_or_load_train_lines(transcripts):
+    if os.path.exists('sentence'):
+        with open("sentences", "rb") as fp:   # Unpickling
+            sentences = pickle.load(fp)
+        return sentences
+    
+    sentences = []
+    for text in tqdm(transcripts):
+        sentences += split_into_sentences(text)
+
+    with open("sentences", "wb") as fp:  # Pickling
+        pickle.dump(sentences, fp)
+    return sentences
+
+def encode(s, vocab):
+    """
+    Convert a string into a list of integers
+    """
+    s = s.strip(punctuation)
+    x = sum([SSP.tokenize(word)+[" "]
+            for word in word_tokenize(s)], []) +[" "]
+    return [vocab[xx] for xx in x]
+
+
+def decode(x, vocab):
+    """
+    Convert list of ints to string
+    """
+    s = "".join([vocab.lookup_token(xx) for xx in x])
+    return s
 
 
 def log_domain_matmul(log_A, log_B):
@@ -56,23 +111,6 @@ def maxmul(log_A, log_B):
     out1, out2 = torch.max(elementwise_sum, dim=1)
 
     return out1, out2
-
-
-def encode(s, v2):
-    """
-    Convert a string into a list of integers
-    """
-    x = sum([SSP.tokenize(word)+[" "]
-            for word in word_tokenize(s)], []) + ["\n"]
-    return [v2[xx] for xx in x]
-
-
-def decode(x, v2):
-    """
-    Convert list of ints to string
-    """
-    s = "".join([v2.lookup_token(xx) for xx in x])
-    return s
 
 
 alphabets = "([A-Za-z])"

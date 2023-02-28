@@ -5,7 +5,7 @@ import os
 subprocess.run("rm -Rf data", shell=True)
 os.mkdir("data")
 
-download("https://drive.google.com/uc?id=1_rmpEwhBAGfT_De3tYaCOuGJwEHN7JlC")
-subprocess.run("mv aochildes.zip data", shell=True)
+download("https://drive.google.com/uc?id=15AMwAEt0QM9IBa1pVRNrd9O-B4xN_59-")
+subprocess.run("mv babylm_data.zip data", shell=True)
 subprocess.run(
-    "cd data; unzip aochildes.zip; rm -Rf __MACOSX aochildes.zip", shell=True)
+    "cd data; unzip babylm_data.zip; rm -Rf __MACOSX babylm_data.zip", shell=True)

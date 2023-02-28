@@ -61,10 +61,30 @@ class Collate:
         x_lengths = torch.tensor(x_lengths)
         return ((x, x_), x_lengths)
 
+def read_text_file(file_path):
+        file_content = ""
+        with open(file_path, 'r') as f:
+            for line in f:
+                file_content += line
+        return file_content
+
+def load_transcripts(path):
+    file_content = ""
+    os.chdir(path)
+    print(os.listdir())
+    for file in os.listdir():
+        if file.endswith(".train"):
+            file_path = f"{path}/{file}"
+            print(file_path)
+            file_content += read_text_file(file_path)+"\n"
+    return file_content
 
 def train_hmm_syllables():
-    transcripts = AOChildesDataSet().load_transcripts()
+    path = os.getcwd() + "/data/babylm_data/babylm_10M"
+    transcripts = load_transcripts(path)
+    print("**********************BUILD VOCAB**********************")
     vocab = build_or_load_vocab(transcripts)
+    print("**********************Split Sentences**********************")
     train_lines = build_or_load_train_lines(transcripts)
     print(train_lines[:10])
     train_dataset = TextDataset(train_lines, vocab)
@@ -103,9 +123,5 @@ def train_hmm_syllables():
 
 if __name__ == "__main__":
     aochildes.configs.Dirs.transcripts = Path("data/aochildes/")
-    # train_hmm_syllables()
-    # FIXME (Leon): 1. why is <unk> in output?
-    # 2. why are there so many newlines?
-    # 3. Remove newlines from vocab
-    # 4. make sure the ouput of the below call is exactly 10 sentences
+    train_hmm_syllables()
     generate_babytalk_sentences(10, "babytalk_corpus.txt")

@@ -84,6 +84,8 @@ def train_hmm_syllables():
     transcripts = load_transcripts(path)
     print("**********************BUILD VOCAB**********************")
     vocab = build_or_load_vocab(transcripts)
+    vocab.insert_token("<unk>", len(vocab))
+    vocab.set_default_index(vocab["<unk>"])
     print("**********************Split Sentences**********************")
     train_lines = build_or_load_train_lines(transcripts)
     print(train_lines[:10])

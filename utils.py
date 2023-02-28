@@ -22,6 +22,7 @@ def build_or_load_vocab(transcript, unk_token="<unk>"):
         all_tokens += out
 
     all_syllables = []
+    print(len(all_tokens))
     for out in tqdm(pool.map(SSP.tokenize, all_tokens)):
         all_syllables += out
     

@@ -6,5 +6,3 @@ pip3 install -r requirements.txt
 python3 data_download.py
 # train model
 python3 babylm_syllables.py
-# inference to generate babytalk corpus
-python3 generate_babytalk_corpus.py

@@ -9,8 +9,28 @@ from torchtext.vocab import vocab as torch_vocab
 from collections import OrderedDict, Counter
 from tqdm import tqdm
 from string import punctuation
+import re
 
 SSP = SyllableTokenizer()
+
+def read_text_file(file_path):
+        file_content = []
+        with open(file_path, 'r') as f:
+            for line in f:
+                line = re.sub(r'[^A-Za-z0-9 ]+', '', line)
+                file_content.append(line)
+        return file_content
+
+def load_transcripts(path):
+    file_content = []
+    os.chdir(path)
+    print(os.listdir())
+    for file in os.listdir():
+        if file.endswith(".train"):
+            file_path = f"{path}/{file}"
+            print(file_path)
+            file_content+=read_text_file(file_path)
+    return file_content
 
 def build_or_load_vocab(transcript, unk_token="<unk>"):
     if os.path.exists('vocab_obj.pth'):
@@ -18,12 +38,11 @@ def build_or_load_vocab(transcript, unk_token="<unk>"):
     all_tokens = []
     pool = multiprocessing.Pool(None)
 
-    for out in tqdm(pool.map((word_tokenize), transcript)):
+    for out in tqdm(pool.map((word_tokenize), transcript), total=len(transcript)):
         all_tokens += out
 
     all_syllables = []
-    print(len(all_tokens))
-    for out in tqdm(pool.map(SSP.tokenize, all_tokens)):
+    for out in tqdm(pool.map(SSP.tokenize, all_tokens), total=len(all_tokens)):
         all_syllables += out
     
     vocab = torch_vocab(OrderedDict(Counter(all_syllables)))
@@ -51,6 +70,7 @@ def encode(s, vocab):
     Convert a string into a list of integers
     """
     s = s.strip(punctuation)
+    s = re.sub(r'[^A-Za-z0-9 ]+', '', s)
     x = sum([SSP.tokenize(word)+[" "]
             for word in word_tokenize(s)], []) +[" "]
     return [vocab[xx] for xx in x]

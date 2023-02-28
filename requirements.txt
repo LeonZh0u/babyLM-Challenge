@@ -8,3 +8,4 @@ stanza
 git+https://github.com/UIUCLearningLanguageLab/AOCHILDES.git
 gdown
 scikit-learn
+regex

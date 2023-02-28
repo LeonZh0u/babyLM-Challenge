@@ -1,12 +1,12 @@
 from trainer import *
 from hmm_syllables import *
 from utils import *
-from scipy.stats import lognorm
+from scipy.stats import moyal
 from torchtext.vocab import vocab as torch_vocab
 import sys
 
 def generate_babytalk_sentences(n_sent=10, output_file=None):
-    sampled_lens = list(map(int, lognorm.rvs(0.5491595459713867, loc=-0.4303603242253272, scale=4.628530660114688, size=n_sent)))
+    sampled_lens = list(map(int, moyal.rvs(loc = 4.752048401023519, scale = 2.123603020197126, size=n_sent)))
 
     vocab = torch.load('vocab_obj.pth')
 

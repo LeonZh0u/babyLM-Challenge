@@ -18,7 +18,7 @@ def build_or_load_vocab(transcript, unk_token="<unk>"):
     all_tokens = []
     pool = multiprocessing.Pool(None)
 
-    for out in pool.map((word_tokenize), transcript):
+    for out in tqdm(pool.map((word_tokenize), transcript)):
         all_tokens += out
 
     all_syllables = []

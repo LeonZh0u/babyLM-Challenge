@@ -98,8 +98,8 @@ def train_hmm_syllables():
     train_loss = 0
     num_samples = 0
     model.train()
-    print_interval = 50
-
+    print_interval = 5000
+    save_interval = 500000
     for idx, batch in enumerate(tqdm(train_dataset.loader)):
         (x, text), T = batch
         batch_size = len(x)
@@ -116,8 +116,8 @@ def train_hmm_syllables():
                 sampled_x, sampled_z = model.sample()
                 print(sampled_z)
                 print(decode(sampled_x, vocab))
-
-    torch.save(model.state_dict(), "model_tokens.pt")
+        if idx % save_interval == 0:
+            torch.save(model.state_dict(), "model_tokens.pt")
     # model = HMM_syllable(M=len(vocab), N=6)
     # model.load_state_dict(torch.load("model_tokens.pt"))
     print("saved")

@@ -62,21 +62,21 @@ class Collate:
         return ((x, x_), x_lengths)
 
 def read_text_file(file_path):
-        file_content = ""
+        file_content = []
         with open(file_path, 'r') as f:
             for line in f:
-                file_content += line
+                file_content.append(line)
         return file_content
 
 def load_transcripts(path):
-    file_content = ""
+    file_content = []
     os.chdir(path)
     print(os.listdir())
     for file in os.listdir():
         if file.endswith(".train"):
             file_path = f"{path}/{file}"
             print(file_path)
-            file_content += read_text_file(file_path)+"\n"
+            file_content+=read_text_file(file_path)
     return file_content
 
 def train_hmm_syllables():

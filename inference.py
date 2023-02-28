@@ -8,10 +8,11 @@ import sys
 def generate_babytalk_sentences(n_sent=10, output_file=None):
     sampled_lens = list(map(int, moyal.rvs(loc = 4.752048401023519, scale = 2.123603020197126, size=n_sent)))
 
-    vocab = torch.load('vocab_obj.pth')
-
+    vocab = torch.load('data/babylm_data/babylm_10M/vocab_obj.pth')
+    vocab.insert_token("<unk>", len(vocab))
+    vocab.set_default_index(vocab["<unk>"])
     model = HMM_syllable(M=len(vocab), N=6)
-    model.load_state_dict(torch.load("model_tokens.pt"))
+    model.load_state_dict(torch.load("data/babylm_data/babylm_10M/model_tokens.pt"))
     model.eval()
     file = open(output_file, "w") if output_file else sys.stdout
     for i in range(n_sent):

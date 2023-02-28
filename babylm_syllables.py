@@ -80,8 +80,8 @@ def train_hmm_syllables():
     train_loss = 0
     num_samples = 0
     model.train()
-    print_interval = 5000
-    save_interval = 500000
+    print_interval = 500
+    save_interval = 5000
     for idx, batch in enumerate(tqdm(train_dataset.loader)):
         (x, text), T = batch
         batch_size = len(x)

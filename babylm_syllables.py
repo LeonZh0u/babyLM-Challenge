@@ -61,9 +61,9 @@ class Collate:
         x_lengths = torch.tensor(x_lengths)
         return ((x, x_), x_lengths)
 
-def train_hmm_syllables():
-    path = os.getcwd() + "/data/babylm_data/babylm_10M"
-    transcripts = load_transcripts(path)
+def train_hmm_syllables(model_dir, dataset_dir, pretrain_dir):
+    
+    transcripts = load_transcripts(dataset_dir)
     print("**********************BUILD VOCAB**********************")
     vocab = build_or_load_vocab(transcripts)
     vocab.insert_token("<unk>", len(vocab))
@@ -75,6 +75,8 @@ def train_hmm_syllables():
 
     print("**********************START TRAINING**********************")
     model = HMM_syllable(M=len(vocab), N=6)
+    if os.path.exists(pretrain_dir)::
+        model.load_state_dict(torch.load(pretrain_dir))
     optimizer = torch.optim.Adam(
         model.parameters(), lr=0.01, weight_decay=0.00001)
     train_loss = 0
@@ -99,13 +101,18 @@ def train_hmm_syllables():
                 print(sampled_z)
                 print(decode(sampled_x, vocab))
         if idx % save_interval == 0:
-            torch.save(model.state_dict(), "model_tokens.pt")
+            torch.save(model.state_dict(), model_dir+"model_tokens{}.pt".format(idx))
+    torch.save(model.state_dict(), model_dir+"model_tokens{}.pt".format(idx))
     # model = HMM_syllable(M=len(vocab), N=6)
     # model.load_state_dict(torch.load("model_tokens.pt"))
     print("saved")
 
 
 if __name__ == "__main__":
-    aochildes.configs.Dirs.transcripts = Path("data/aochildes/")
-    train_hmm_syllables()
+    #aochildes.configs.Dirs.transcripts = Path("data/aochildes/")
+    
+    model_dir = os.getcwd() + '/checkpoints/'
+    dataset_dir = os.getcwd() + "/data/babylm_data/babylm_10M"
+    pretrain_dir = os.getcwd() + '/checkpoints/model_tokens30000'
+    train_hmm_syllables(model_dir, dataset_dir, pretrain_dir)
     generate_babytalk_sentences(10, "babytalk_corpus.txt")

@@ -52,7 +52,7 @@ def build_or_load_vocab(transcript, unk_token="<unk>"):
     return vocab
 
 def build_or_load_train_lines(transcripts):
-    if os.path.exists('sentence'):
+    if os.path.exists('sentences'):
         with open("sentences", "rb") as fp:   # Unpickling
             sentences = pickle.load(fp)
         return sentences
